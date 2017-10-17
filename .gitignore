@@ -1,3 +1,4 @@
 resources/
 .idea/
-evaluation_datasets
+comment-level-datasets
+segment-level-datasets

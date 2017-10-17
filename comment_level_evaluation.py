@@ -12,10 +12,10 @@ class CommentLevelEvaluation:
         self.utilities = Utilities()
         # self.Processor = Processor()
 
-        self.storage_path = 'evaluation_datasets/'
+        self.storage_path = 'comment-level-datasets/'
         self.random_states = [11, 22, 33, 44, 55]
 
-    def generate_datasets(self):
+    def generate_datasets(self, dataset_initial):
         X = self.utilities.read_from_csv(self.data_file)
         y = [0] * len(X)  # fake labels
         for random_state in self.random_states:
@@ -24,24 +24,23 @@ class CommentLevelEvaluation:
             for row in X_test:
                 row[0] = row[0].replace('**$**', "")
 
-            self.utilities.save_list_as_csv(X_train, self.storage_path + 'mmhsct_train_' + str(random_state) +'.csv')
-            self.utilities.save_list_as_csv(X_test, self.storage_path + 'mmhsct_test_' + str(random_state) +'.csv')
+            self.utilities.save_list_as_csv(X_train, self.storage_path + dataset_initial +'_train_' + str(random_state) +'.csv')
+            self.utilities.save_list_as_csv(X_test, self.storage_path + dataset_initial + '_test_' + str(random_state) +'.csv')
 
-    def run_experiment(self):
+    def run_experiment(self, dataset_initial):
         for random_state in self.random_states:
-            X_train = 'mmhsct_train_' + str(random_state) + '.csv'
-            X_test = 'mmhsct_test_' + str(random_state) + '.csv'
+            X_train = self.storage_path + dataset_initial + '_train_' + str(random_state) + '.csv'
+            X_test = self.storage_path + dataset_initial + '_test_' + str(random_state) + '.csv'
 
             settings = {
                 'training_file': X_train,
                 'data_file': X_test,
                 'max_reviews': None,  # Options: 0 to any integer | default: None (all)
-                'output_file': 'srft_output_' + str(random_state) + '.csv'
+                'output_file': self.storage_path + dataset_initial + '_output_' + str(random_state) + '.csv'
             }
 
             processor = Processor(settings=settings)
             processor.run()
-            exit()
 
     def merge_aspect_classes(self, aspects):
         group_1 = ['staff attitude and professionalism', 'communication']
@@ -91,16 +90,10 @@ class CommentLevelEvaluation:
 
         return category_f_scores
 
-
-
-
-
-    def calculate_accuracy(self):
+    def calculate_accuracy(self, dataset_initials):
         for random_state in self.random_states:
-            # X_test = self.utilities.read_from_csv('evaluation_datasets/mmhsct_test_' + str(random_state) + '.csv')
-            # X_pred = self.utilities.read_from_csv('evaluation_datasets/mmhsct_output_' + str(random_state) + '.csv')
-            X_test = self.utilities.read_from_csv('evaluation_datasets/srft_test_' + str(random_state) + '.csv')
-            X_pred = self.utilities.read_from_csv('evaluation_datasets/srft_output_' + str(random_state) + '.csv')
+            X_test = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_test_' + str(random_state) + '.csv')
+            X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
 
             y_test = []
             y_pred = []
@@ -149,25 +142,21 @@ class CommentLevelEvaluation:
             overall_f_score = (2*precision * recall) / (precision + recall)
             overall_accuracy = (true_positives + true_negatives) / float(len(y_test))
 
-            print overall_accuracy
-            # print self.calculate_comment_level_scores_for_categories(y_test, y_pred)
+            # print overall_accuracy
+            # print overall_f_score
+            print self.calculate_comment_level_scores_for_categories(y_test, y_pred)
 
 evaluation = CommentLevelEvaluation('mmh_dataset.csv')
 # evaluation = CommentLevelEvaluation('sr_dataset.csv')
 
-# evaluation.generate_datasets()
-# evaluation.run_experiment(settings)
+# Step 1
+# evaluation.generate_datasets('mmhsct')
+# evaluation.generate_datasets('srft')
 
-# from processing import Processor
-# random_state = 11
-# settings = {
-#     'training_file': 'srft_train_'+str(random_state)+'.csv',
-#     'data_file': 'srft_test_'+str(random_state)+'.csv',
-#     'max_reviews': None,  # Options: 0 to any integer | default: None (all)
-#     'output_file': 'srft_output_'+str(random_state)+'.csv'
-# }
-#
-# processor = Processor(settings=settings)
-# processor.run()
+# Step 2
+evaluation.run_experiment('mmhsct')
+evaluation.run_experiment('srft')
 
-evaluation.calculate_accuracy()
+# Step 3
+# evaluation.calculate_accuracy('mmhsct')
+# evaluation.calculate_accuracy('srft')

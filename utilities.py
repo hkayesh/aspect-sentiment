@@ -1,7 +1,8 @@
 import nltk
 from nltk import ngrams
 from nltk.corpus import stopwords
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, WordPunctTokenizer
+from nltk.stem import WordNetLemmatizer
 import csv
 import pickle
 import re
@@ -16,7 +17,7 @@ class Utilities(object):
         self.adverb_phrase_tags = ['RB', 'RBR', 'RBS']
         self.sentiment_classes = ['negative', 'neutral', 'positive']
         self.conjunctions_file_path = 'conjunctions.txt'
-
+        self.wordnet_lemmatizer = WordNetLemmatizer()
         self.conjunctions = self.get_lines_from_text_file(self.conjunctions_file_path)
 
     def write_content_to_file(self, file_path, content):
@@ -239,3 +240,25 @@ class Utilities(object):
         with open(file_path, 'wb') as resultFile:
             wr = csv.writer(resultFile, dialect='excel')
             wr.writerows(data_list)
+
+    def get_pos_tags(self, sentences):
+        tokens = nltk.word_tokenize(sentences)
+        pos_tags = nltk.pos_tag(tokens)
+
+        return pos_tags
+
+    def tokenize(self, sentence):
+        from nltk.tokenize import TweetTokenizer
+        tknzr = TweetTokenizer()
+        tokens = tknzr.tokenize(sentence)
+
+        return tokens
+
+    def get_lemma(self, sentences):
+        lemmatized = {}
+        tokens = self.tokenize(sentences)
+        for token in tokens:
+            results = self.wordnet_lemmatizer.lemmatize(token)
+            lemmatized[token] = results
+
+        return lemmatized

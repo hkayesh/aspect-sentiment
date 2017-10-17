@@ -3,9 +3,6 @@ from sklearn import tree
 from sklearn.model_selection import cross_val_score, cross_val_predict
 from sklearn.metrics import classification_report as clsr
 from sklearn.model_selection import train_test_split as tts, StratifiedKFold
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import SGDClassifier
 from sklearn import svm
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -22,7 +19,7 @@ class Evaluator:
     def __init__(self, data_file):
         self.utilities = Utilities()
         self.data_file = data_file
-        self.processor = Processor()
+        self.processor = Processor({'training_file': data_file})
         self.segmenter = self.processor.load_segmenter()
         self.stanford = Stanford()
         self.segments = []
