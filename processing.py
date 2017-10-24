@@ -1,4 +1,5 @@
 import os
+import re
 import warnings
 import pickle
 from nltk.stem import WordNetLemmatizer
@@ -112,6 +113,8 @@ class Processor(object):
                 aspects = ['other']
                 sentiments = ['negative']
 
+            segments = self.apply_dictionaries(segments, aspects)
+
             if len(segments) == 1:
                 other_words = ['excellent', 'good', 'very good', 'bad', 'ok', 'no response']
                 if segments[0] in other_words or len(self.utilities.tokenize(segments[0])) == 1:
@@ -123,7 +126,9 @@ class Processor(object):
                 if i > 0 and aspect == aspects[i - 1] and sentiments[i] == sentiments[i - 1]:
                     continue
                 else:
-                    asp_snt_pair.append(aspect + ' ' + sentiments[i])
+                    # removed sentiment from output
+                    # asp_snt_pair.append(aspect + ' ' + sentiments[i])
+                    asp_snt_pair.append(aspect)
 
             result = [unicode(reviews[index]).encode("utf-8")] + list(set(asp_snt_pair))
             reviews_result.append(result)
@@ -169,3 +174,22 @@ class Processor(object):
                 if clue in aspect:
                     new_aspect = 'care quality'
         return new_aspect
+
+    def apply_dictionaries(self, segments, aspects):
+        food_lexicon = ['food', 'canteen', 'canten', 'coffee', 'cofee', 'coffe', 'coffee', 'tea', 'drink', 'drinks']
+        parking_lexicon = ['car park', 'car-park', 'carpark', 'parking', 'bicycle']
+
+        for index, segment in enumerate(segments):
+            all_words = self.utilities.get_lemma(segment)
+            lemmatized_words = all_words.values()
+            # print segment
+            for word in food_lexicon:
+                if word in lemmatized_words:
+                    aspects[index] = 'food'
+
+            for word in parking_lexicon:
+                if word in lemmatized_words:
+                    aspects[index] = 'parking'
+
+        return aspects
+

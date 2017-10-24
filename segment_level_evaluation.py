@@ -12,7 +12,7 @@ class SegmentLevelEvaluation:
 
 
     def run_experiment(self):
-        path = 'segment-level-datasets/'
+        path = '/home/hmayun/PycharmProjects/create-dataset-r/segment-level-7-categories/'
         database = 'mmhsct'
         # database = 'srft'
 

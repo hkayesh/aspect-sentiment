@@ -1,6 +1,5 @@
 from processing import Processor
 import time
-
 '''
 #********** READ ME *********#
 To run the program provide three file names and the number of maximum 
@@ -14,7 +13,7 @@ from 'data_file'. Finally, the result is saved as a CSV file in 'output_file'.
 settings = {
     'training_file': 'mmh_dataset.csv',
     'data_file': '10k_data.csv',
-    'max_reviews': 10,  # Options: 0 to any integer | default: None (all)
+    'max_reviews': 1000,  # Options: 0 to any integer | default: None (all)
     'output_file': '10k_data.output.csv'
 }
 
