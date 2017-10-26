@@ -262,3 +262,22 @@ class Utilities(object):
             lemmatized[token] = results
 
         return lemmatized
+
+    def merge_classes(self, aspects):
+        group_1 = ['staff attitude and professionalism', 'communication']
+        group_2 = ['care quality', 'resource', 'process']
+        group_3 = ['environment', 'food', 'parking']
+        # group_3 = ['environment']
+        group_4 = ['waiting time']
+        group_5 = ['other', 'noise']
+        # group_6 = ['food']
+        # group_7 = ['parking']
+        # groups = [group_1, group_2, group_3, group_4, group_5, group_6, group_7]
+        groups = [group_1, group_2, group_3, group_4, group_5]
+        new_aspects = []
+        for aspect in aspects:
+            for group in groups:
+                if aspect in group:
+                    new_aspects.append(group[0])  # all members will be replaced by the first member of the group
+                    break
+        return new_aspects

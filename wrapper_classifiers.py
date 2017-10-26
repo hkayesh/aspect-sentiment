@@ -67,7 +67,7 @@ class AspectClassifier(BaseEstimator, ClassifierMixin):
         input_data = self.utilities.get_segments_aspects_sentiments(training_file)
 
         X = input_data['segments']
-        y = self.merge_classes(input_data['aspects'])
+        y = self.utilities.merge_classes(input_data['aspects'])
         self.fit(X, y)
 
     def _make_prediction_by_model(self, model, segments):
@@ -91,23 +91,6 @@ class AspectClassifier(BaseEstimator, ClassifierMixin):
 
         return result
 
-    def merge_classes(self, aspects):
-        group_1 = ['staff attitude and professionalism', 'communication']
-        group_2 = ['care quality', 'resource', 'process']
-        group_3 = ['environment']
-        group_4 = ['waiting time']
-        group_5 = ['other', 'noise']
-        group_6 = ['food']
-        group_7 = ['parking']
-        groups = [group_1, group_2, group_3, group_4, group_5, group_6, group_7]
-        new_aspects = []
-        for aspect in aspects:
-            for group in groups:
-                if aspect in group:
-                    new_aspects.append(group[0])  # all members will be replaced by the first member of the group
-                    break
-        return new_aspects
-
     def get_classifier_model(self, classes, X, y):
         core_classifier = CoreClassifier()
         new_X = []
@@ -127,7 +110,7 @@ class AspectClassifier(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
         X = self.utilities.convert_list_to_utf8(X)
-        y = self.merge_classes(y)
+        y = self.utilities.merge_classes(y)
         waiting_time_model = self.get_classifier_model(['waiting time'], X, y)
         environment_model = self.get_classifier_model(['environment'], X, y)
         care_quality_model = self.get_classifier_model(['care quality'], X, y)

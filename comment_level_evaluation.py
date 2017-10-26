@@ -12,8 +12,9 @@ class CommentLevelEvaluation:
         self.utilities = Utilities()
         # self.Processor = Processor()
 
-        self.storage_path = 'comment-level-datasets/'
-        self.random_states = [11, 22, 33, 44, 55]
+        self.storage_path = 'comment-level-datasets-2/'
+        # self.storage_path = 'r-combine-outputs/'
+        self.random_states = [111, 122, 133, 144, 155]
 
     def generate_datasets(self, dataset_initial):
         X = self.utilities.read_from_csv(self.data_file)
@@ -93,7 +94,8 @@ class CommentLevelEvaluation:
     def calculate_accuracy(self, dataset_initials):
         for random_state in self.random_states:
             X_test = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_test_' + str(random_state) + '.csv')
-            X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
+            # X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
+            X_pred = self.utilities.read_from_csv('r-combine-outputs/' + dataset_initials + '_combined_confidence_' + str(random_state) + '.csv')
 
             y_test = []
             y_pred = []
@@ -103,6 +105,7 @@ class CommentLevelEvaluation:
                 for item in row:
                     if item:
                         aspects.append(item.rsplit(' ', 1)[0])
+                        # aspects.append(item)
                 y_test.append(list(set(self.merge_aspect_classes(aspects))))
 
                 predicted_row = X_pred[index]
@@ -111,7 +114,8 @@ class CommentLevelEvaluation:
                 aspects = []
                 for item in predicted_row:
                     if item:
-                        aspects.append(item.rsplit(' ', 1)[0])
+                        # aspects.append(item.rsplit(' ', 1)[0])
+                        aspects.append(item)
                 y_pred.append(list(set(aspects)))
 
             true_positives = 0
@@ -142,21 +146,21 @@ class CommentLevelEvaluation:
             overall_f_score = (2*precision * recall) / (precision + recall)
             overall_accuracy = (true_positives + true_negatives) / float(len(y_test))
 
-            # print overall_accuracy
-            # print overall_f_score
-            print self.calculate_comment_level_scores_for_categories(y_test, y_pred)
+            #print overall_accuracy
+            print overall_f_score
+            #print self.calculate_comment_level_scores_for_categories(y_test, y_pred)
 
 evaluation = CommentLevelEvaluation('mmh_dataset.csv')
 # evaluation = CommentLevelEvaluation('sr_dataset.csv')
 
 # Step 1
 # evaluation.generate_datasets('mmhsct')
-# evaluation.generate_datasets('srft')
+#evaluation.generate_datasets('srft')
 
 # Step 2
-evaluation.run_experiment('mmhsct')
-evaluation.run_experiment('srft')
+# evaluation.run_experiment('mmhsct')
+# evaluation.run_experiment('srft')
 
 # Step 3
-# evaluation.calculate_accuracy('mmhsct')
+evaluation.calculate_accuracy('mmhsct')
 # evaluation.calculate_accuracy('srft')

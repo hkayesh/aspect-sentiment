@@ -113,7 +113,7 @@ class Processor(object):
                 aspects = ['other']
                 sentiments = ['negative']
 
-            segments = self.apply_dictionaries(segments, aspects)
+            #aspects = self.apply_dictionaries(segments, aspects)
 
             if len(segments) == 1:
                 other_words = ['excellent', 'good', 'very good', 'bad', 'ok', 'no response']
