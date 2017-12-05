@@ -110,7 +110,7 @@ class Processor(object):
                 sentiments = self.get_sentiment_for_aspects(segments)
             else:
                 # Assign 'other' for noisy reviews to keep indexes same
-                aspects = ['other']
+                aspects = ['other 1']
                 sentiments = ['negative']
 
             #aspects = self.apply_dictionaries(segments, aspects)
@@ -118,18 +118,26 @@ class Processor(object):
             if len(segments) == 1:
                 other_words = ['excellent', 'good', 'very good', 'bad', 'ok', 'no response']
                 if segments[0] in other_words or len(self.utilities.tokenize(segments[0])) == 1:
-                    aspects = ['other']
+                    aspects = ['other 1']
 
-            # Post-processing: remove consecutive duplicate aspects
+            # Post-processing: remove duplicate aspects from a comment
             asp_snt_pair = []
             for i, aspect in enumerate(aspects):
-                if i > 0 and aspect == aspects[i - 1] and sentiments[i] == sentiments[i - 1]:
-                    continue
+                # if i > 0 and aspect == aspects[i - 1] and sentiments[i] == sentiments[i - 1]:
+
+                if i > 0 and aspect.rsplit(' ', 1)[0] in [item.rsplit(' ', 1)[0] for item in asp_snt_pair]:
+                    new_score = aspect.rsplit(' ', 1)[1]
+                    existing_aspects = [item.rsplit(' ', 1)[0] for item in asp_snt_pair]
+                    index_dup_aspect = existing_aspects.index(aspect.rsplit(' ', 1)[0])
+
+                    if float(new_score) > float(asp_snt_pair[index_dup_aspect].rsplit(' ', 1)[1]):
+                        asp_snt_pair[index_dup_aspect] = aspect
+                    else:
+                        continue
                 else:
                     # removed sentiment from output
                     # asp_snt_pair.append(aspect + ' ' + sentiments[i])
                     asp_snt_pair.append(aspect)
-
             result = [unicode(reviews[index]).encode("utf-8")] + list(set(asp_snt_pair))
             reviews_result.append(result)
 
@@ -174,22 +182,3 @@ class Processor(object):
                 if clue in aspect:
                     new_aspect = 'care quality'
         return new_aspect
-
-    def apply_dictionaries(self, segments, aspects):
-        food_lexicon = ['food', 'canteen', 'canten', 'coffee', 'cofee', 'coffe', 'coffee', 'tea', 'drink', 'drinks']
-        parking_lexicon = ['car park', 'car-park', 'carpark', 'parking', 'bicycle']
-
-        for index, segment in enumerate(segments):
-            all_words = self.utilities.get_lemma(segment)
-            lemmatized_words = all_words.values()
-            # print segment
-            for word in food_lexicon:
-                if word in lemmatized_words:
-                    aspects[index] = 'food'
-
-            for word in parking_lexicon:
-                if word in lemmatized_words:
-                    aspects[index] = 'parking'
-
-        return aspects
-

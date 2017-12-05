@@ -74,7 +74,10 @@ class AspectClassifier(BaseEstimator, ClassifierMixin):
         classes = model.labels_.classes_
         result = model.predict(segments)
 
-        output_classes = [classes[class_id] for class_id in result]
+        proba_score_lists = model.predict_proba(segments)
+
+        max_scores = [max(proba_score_list) for proba_score_list in proba_score_lists]
+        output_classes = [classes[class_id] + " " + str(proba_score) for class_id, proba_score in zip(result, max_scores)]
 
         return output_classes
 
