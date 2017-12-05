@@ -231,8 +231,8 @@ class CommentLevelEvaluation:
         ots = []
         for random_state in self.random_states:
             X_test = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_test_' + str(random_state) + '.csv')
-            X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
-            # X_pred = self.utilities.read_from_csv('r-combine-outputs/' + dataset_initials + '_output_confidence_' + str(random_state) + '.csv')
+            # X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
+            X_pred = self.utilities.read_from_csv('r-combine-outputs/' + dataset_initials + '_output_confidence_' + str(random_state) + '.csv')
 
             y_test = []
             y_pred = []

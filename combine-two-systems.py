@@ -62,7 +62,7 @@ class CombineSystems():
 
         return aspects
 
-    def combine(self, file_a_path, file_b_path, threshold_a, threshold_b, output_file_path):
+    def combine_by_dynamic_threshold(self, file_a_path, file_b_path, output_file_path):
 
         file_a = utilities.read_from_csv(file_a_path)
         file_b = utilities.read_from_csv(file_b_path)
@@ -88,10 +88,11 @@ class CombineSystems():
                 # if b and b not in aspects and b in self.categories:
                 #     aspects.append(b)
 
-                # union with threshold
-                # if a and a.rsplit(' ', 1)[0] not in aspects and float(a.rsplit(' ', 1)[1]) >= threshold_a:
-                #     aspects.append(a.rsplit(' ', 1)[0])
+                # intersection
+                # if a and b and a == b and a not in aspects:
+                #     aspects.append(a)
 
+                # union with threshold
                 if a is not None:
                     aspect_a = a.rsplit(' ', 1)[0]
                     if aspect_a not in aspects:
@@ -99,9 +100,6 @@ class CombineSystems():
                         is_valid = self.is_valid_asp_from_from_system_a(aspect_a, confidence_value_a)
                         if is_valid:
                             aspects.append(aspect_a)
-
-                # if b and b.rsplit(' ', 1)[0] in self.categories and b.rsplit(' ', 1)[0] not in aspects and float(b.rsplit(' ', 1)[1]) >= threshold_b:
-                #     aspects.append(b.rsplit(' ', 1)[0])
 
                 if b is not None:
                     aspect_b = b.rsplit(' ', 1)[0]
@@ -111,11 +109,43 @@ class CombineSystems():
                         if is_valid:
                             aspects.append(aspect_b)
 
+            # Apply food and parking dictionaries
+            # asps_from_dictionaries = self.apply_dictionaries(comment)
+            # if len(asps_from_dictionaries) > 0:
+            #     aspects = aspects + asps_from_dictionaries
 
+            if len(aspects) < 1:
+                aspects = ['other']
 
-                # intersection
-                # if a and b and a == b and a not in aspects:
-                #     aspects.append(a)
+            output.append([comment] + aspects)
+
+        self.utilities.save_list_as_csv(output, output_file_path)
+
+    def combine_by_static_threshold(self, file_a_path, file_b_path, threshold_a, threshold_b, output_file_path):
+
+        file_a = utilities.read_from_csv(file_a_path)
+        file_b = utilities.read_from_csv(file_b_path)
+
+        output = []
+        for row_a, row_b in zip(file_a, file_b):
+
+            comment = row_a[0]
+            aspects = []
+
+            # remove comment from the first column
+            del row_a[0]
+            del row_b[0]
+
+            for a, b in zip(row_a, row_b):
+                if not a and not b and a in self.categories:
+                    break
+
+                # union with threshold
+                if a and a.rsplit(' ', 1)[0] not in aspects and float(a.rsplit(' ', 1)[1]) >= threshold_a:
+                    aspects.append(a.rsplit(' ', 1)[0])
+
+                if b and b.rsplit(' ', 1)[0] in self.categories and b.rsplit(' ', 1)[0] not in aspects and float(b.rsplit(' ', 1)[1]) >= threshold_b:
+                    aspects.append(b.rsplit(' ', 1)[0])
 
             # Apply food and parking dictionaries
             # asps_from_dictionaries = self.apply_dictionaries(comment)
@@ -204,22 +234,34 @@ combine_systems = CombineSystems()
 com_eval = CommentLevelEvaluation()
 utilities = Utilities()
 
+# calculate combine evaluation scores
 # thresholds_a = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #
 # for a in thresholds_a:
 #     thresholds_b = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #
 #     for b in thresholds_b:
+#         random_states = [111, 122, 133, 144, 155]
+#         for random_state in random_states:
+#             file_a_path = 'comment-level-datasets-2/mmhsct_output_' + str(random_state) + '.csv'
+#             file_b_path = 'r-combine-outputs/mmhsct_output_confidence_' + str(random_state) + '.csv'
+#             output_file_path = 'r-combine-outputs/mmhsct_combined_confidence_' + str(random_state) + '.csv'
+#
+#             combine_systems.combine_by_static_threshold(file_a_path, file_b_path, a, b, output_file_path)
+#
+#         # test_file_path = 'comment-level-datasets-2/mmhsct_test_111.csv'
+#         com_eval.calculate_accuracy('mmhsct')
+#         # com_eval.calculate_per_system_accuracy('mmhsct')
+#         # combine_systems.extract_top_comments(file_b)
+
+
+# calculate per system scores
 random_states = [111, 122, 133, 144, 155]
 for random_state in random_states:
     file_a_path = 'comment-level-datasets-2/mmhsct_output_' + str(random_state) + '.csv'
     file_b_path = 'r-combine-outputs/mmhsct_output_confidence_' + str(random_state) + '.csv'
     output_file_path = 'r-combine-outputs/mmhsct_combined_confidence_' + str(random_state) + '.csv'
 
-    combine_systems.combine(file_a_path, file_b_path, 0.1, 0.1, output_file_path)
+    combine_systems.combine_by_dynamic_threshold(file_a_path, file_b_path, output_file_path)
 
-# test_file_path = 'comment-level-datasets-2/mmhsct_test_111.csv'
-# com_eval.calculate_accuracy('mmhsct')
 com_eval.calculate_per_system_accuracy('mmhsct')
-# combine_systems.extract_top_comments(file_b)
-
