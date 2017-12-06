@@ -1,4 +1,4 @@
-from processing import Processor
+from scripts.processing import Processor
 import time
 '''
 #********** READ ME *********#
@@ -11,10 +11,10 @@ from 'data_file'. Finally, the result is saved as a CSV file in 'output_file'.
 '''
 
 settings = {
-    'training_file': 'mmh_dataset.csv',
-    'data_file': '10k_data.csv',
-    'max_reviews': 10,  # Options: 0 to any integer | default: None (all)
-    'output_file': '10k_data.output.csv'
+    'training_file': 'mmhsct_train_111.csv',
+    'data_file': 'mmhsct_test_111.csv',
+    'max_reviews': None,  # Options: 0 to any integer | default: None (all)
+    'output_file': 'mmhsct_output_111.csv'
 }
 
 
