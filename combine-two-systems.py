@@ -3,7 +3,7 @@ from comment_level_evaluation import CommentLevelEvaluation
 import operator
 
 
-class CombineSystems():
+class CombineSystems:
     def __init__(self):
         self.utilities = Utilities()
 
@@ -14,11 +14,11 @@ class CombineSystems():
 
     def is_valid_asp_from_from_system_a(self, aspect, confidence_value):
         is_valid = False
-        thresholds = {'environment': 0.1,
+        thresholds = {'environment': 0.2,
                       'waiting time': 0.6,
-                      'staff attitude and professionalism': 0.1,
+                      'staff attitude and professionalism': 0.4,
                       'care quality': 0.1,
-                      'other': 0.6,
+                      'other': 0.5,
                       }
 
         aspects = thresholds.keys()
@@ -29,10 +29,10 @@ class CombineSystems():
 
     def is_valid_asp_from_from_system_b(self, aspect, confidence_value):
         is_valid = False
-        thresholds = {'environment': 0.4,
+        thresholds = {'environment': 0.3,
                       'waiting time': 0.1,
                       'staff attitude and professionalism': 0.1,
-                      'care quality': 0.6,
+                      'care quality': 0.1,
                       'other': 0.6
                       }
 
@@ -118,7 +118,6 @@ class CombineSystems():
                 aspects = ['other']
 
             output.append([comment] + aspects)
-
         self.utilities.save_list_as_csv(output, output_file_path)
 
     def combine_by_static_threshold(self, file_a_path, file_b_path, threshold_a, threshold_b, output_file_path):
@@ -234,7 +233,10 @@ combine_systems = CombineSystems()
 com_eval = CommentLevelEvaluation()
 utilities = Utilities()
 
-# calculate combine evaluation scores
+# calculate per system scores
+# com_eval.calculate_per_system_accuracy('mmhsct')
+
+# calculate combine evaluation scores to find best threshold combination
 # thresholds_a = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 #
 # for a in thresholds_a:
@@ -254,8 +256,7 @@ utilities = Utilities()
 #         # com_eval.calculate_per_system_accuracy('mmhsct')
 #         # combine_systems.extract_top_comments(file_b)
 
-
-# calculate per system scores
+# apply best thresholds for combination
 random_states = [111, 122, 133, 144, 155]
 for random_state in random_states:
     file_a_path = 'comment-level-datasets-2/mmhsct_output_' + str(random_state) + '.csv'
@@ -263,5 +264,5 @@ for random_state in random_states:
     output_file_path = 'r-combine-outputs/mmhsct_combined_confidence_' + str(random_state) + '.csv'
 
     combine_systems.combine_by_dynamic_threshold(file_a_path, file_b_path, output_file_path)
+com_eval.calculate_accuracy('mmhsct')
 
-com_eval.calculate_per_system_accuracy('mmhsct')

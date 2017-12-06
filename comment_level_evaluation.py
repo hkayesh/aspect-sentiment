@@ -142,7 +142,6 @@ class CommentLevelEvaluation:
         ots = []
         for random_state in self.random_states:
             X_test = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_test_' + str(random_state) + '.csv')
-            # X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
             X_pred = self.utilities.read_from_csv('r-combine-outputs/' + dataset_initials + '_combined_confidence_' + str(random_state) + '.csv')
 
             y_test = []
@@ -153,7 +152,6 @@ class CommentLevelEvaluation:
                 for item in row:
                     if item:
                         aspects.append(item.rsplit(' ', 1)[0])
-                        # aspects.append(item)
                 y_test.append(list(set(self.merge_aspect_classes(aspects))))
 
                 predicted_row = X_pred[index]
@@ -162,7 +160,6 @@ class CommentLevelEvaluation:
                 aspects = []
                 for item in predicted_row:
                     if item:
-                        # aspects.append(item.rsplit(' ', 1)[0])
                         aspects.append(item)
                 y_pred.append(list(set(aspects)))
 
@@ -201,13 +198,13 @@ class CommentLevelEvaluation:
             overall_f1_scores.append(overall_f1_score)
 
             category_scores = self.calculate_comment_level_scores_for_categories(y_test, y_pred)
-            score_name = 'precision'
+            score_name = 'f1-score'
             envs.append(category_scores['environment'][score_name])
             wts.append(category_scores['waiting time'][score_name])
             saaps.append(category_scores['staff attitude and professionalism'][score_name])
             cqs.append(category_scores['care quality'][score_name])
             ots.append(category_scores['other'][score_name])
-
+        # print overall_precisions
         precision = sum(overall_precisions) / float(len(overall_precisions))
         recall = sum(overall_recalls) / float(len(overall_recalls))
         f1_score = sum(overall_f1_scores) / float(len(overall_f1_scores))
@@ -231,7 +228,12 @@ class CommentLevelEvaluation:
         ots = []
         for random_state in self.random_states:
             X_test = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_test_' + str(random_state) + '.csv')
+
+            # system A output
             # X_pred = self.utilities.read_from_csv(self.storage_path + dataset_initials + '_output_' + str(random_state) + '.csv')
+
+
+            # system B output
             X_pred = self.utilities.read_from_csv('r-combine-outputs/' + dataset_initials + '_output_confidence_' + str(random_state) + '.csv')
 
             y_test = []
