@@ -26,7 +26,7 @@ class Segmenter(object):
         self.comments = self.utilities.get_only_comments_from_dataset(self.dataset_file_path)
         self.features_and_labels = self.get_feature_matrix_from_reviews(self.comments)
 
-        self.model = RandomForestClassifier(n_estimators=100)
+        self.model = RandomForestClassifier(n_estimators=100, random_state=111)
         # self.model = svm.SVR()
         # self.model = tree.DecisionTreeClassifier()
         self._train()

@@ -114,7 +114,7 @@ class CoreClassifier(object):
     def __init__(self):
         self.labels = LabelEncoder()
         # self.classifier = SGDClassifier()
-        self.classifier = svm.SVC(kernel='linear', probability=True)
+        self.classifier = svm.SVC(kernel='linear', probability=True, random_state=111)
         # self.classifier = MultinomialNB()
         # self.classifier = RandomForestClassifier()
         # self.classifier = tree.DecisionTreeClassifier()
