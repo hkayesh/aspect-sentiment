@@ -28,17 +28,17 @@ class Processor(object):
                     pickle.dump(self.ml_asp_classifier, f)
                 print("Aspect Extraction model written out to {}".format(model_path))
 
-        self.ml_snt_classifier = SentimentClassifier()
-        if settings is not None:
-            model_path = settings['training_file'] + '.sentiment_model.pickle'
-            if os.path.exists(model_path):
-                with open(model_path, 'rb') as handle:
-                    self.ml_snt_classifier = pickle.load(handle)
-            else:
-                self.ml_snt_classifier.train(settings['training_file'])
-                with open(model_path, 'wb') as f:
-                    pickle.dump(self.ml_snt_classifier, f)
-                print("Sentiment Detection model written out to {}".format(model_path))
+        # self.ml_snt_classifier = SentimentClassifier()
+        # if settings is not None:
+        #     model_path = settings['training_file'] + '.sentiment_model.pickle'
+        #     if os.path.exists(model_path):
+        #         with open(model_path, 'rb') as handle:
+        #             self.ml_snt_classifier = pickle.load(handle)
+        #     else:
+        #         self.ml_snt_classifier.train(settings['training_file'])
+        #         with open(model_path, 'wb') as f:
+        #             pickle.dump(self.ml_snt_classifier, f)
+        #         print("Sentiment Detection model written out to {}".format(model_path))
 
     def run(self):
         settings = self.settings
@@ -68,7 +68,7 @@ class Processor(object):
 
         reviews_segments = []
         for index, review in enumerate(reviews):
-            print index
+            # print index
             if index in empty_review_indexes:
                 reviews_segments.append([review])
                 continue
@@ -107,7 +107,7 @@ class Processor(object):
 
             if index not in empty_review_indexes:
                 aspects = self.get_aspect_for_segments(segments)
-                sentiments = self.get_sentiment_for_aspects(segments)
+                # sentiments = self.get_sentiment_for_aspects(segments)
             else:
                 # Assign 'other' for noisy reviews to keep indexes same
                 aspects = ['other 1']
@@ -149,9 +149,9 @@ class Processor(object):
 
         return aspects
 
-    def get_sentiment_for_aspects(self, segments):
-        sentiments = self.ml_snt_classifier.predict(segments)
-        return sentiments
+    # def get_sentiment_for_aspects(self, segments):
+    #     sentiments = self.ml_snt_classifier.predict(segments)
+    #     return sentiments
 
     def load_segmenter(self):
         training_file_name = os.path.splitext(self.settings['training_file'])[0]
